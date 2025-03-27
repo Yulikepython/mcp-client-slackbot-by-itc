@@ -42,7 +42,7 @@ class Configuration:
             load_dotenv(env_path, override=True)
             logging.info(f"Loaded environment variables from {env_path}")
         else:
-            logging.warning(f"Environment file not found at {env_path}")
+            logging.warning(f"Environment file not found at {env_path}. Ensure the .env file exists and is accessible.")
 
     @staticmethod
     def load_config(file_path: str) -> Dict[str, Any]:
