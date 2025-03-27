@@ -36,7 +36,7 @@ cat > "$SCRIPT_DIR/mcp_simple_slackbot/servers_config.json" << EOF
 EOF
 
 # Pythonの実行パスを設定（システムのPythonを使用）
-PYTHON_PATH=/home/hnish/mcp-app/mcp-client-slackbot-by-itc/.venv/bin/python
+PYTHON_PATH=${PYTHON_PATH:-$(which python3)}
 
 # 必要なパッケージのインストール
 echo "Installing required packages..."
