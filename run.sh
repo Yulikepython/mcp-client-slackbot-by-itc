@@ -20,16 +20,6 @@ echo "Generating servers_config.json..."
 cat > "$SCRIPT_DIR/mcp_simple_slackbot/servers_config.json" << EOF
 {
   "mcpServers": {
-    "sqlite": {
-      "command": "uvx",
-      "args": ["mcp-server-sqlite", "--db-path", "./test.db"],
-      "description": "SQLite database access for storing and querying data"
-    },
-    "fetch": {
-      "command": "uvx",
-      "args": ["mcp-server-fetch"],
-      "description": "Fetch web content from a URL"
-    },
     "google-workspace": {
       "command": "node",
       "args": [
@@ -46,7 +36,7 @@ cat > "$SCRIPT_DIR/mcp_simple_slackbot/servers_config.json" << EOF
 EOF
 
 # Pythonの実行パスを設定（システムのPythonを使用）
-PYTHON_PATH=$(which python3)
+PYTHON_PATH=/home/hnish/mcp-app/mcp-client-slackbot-by-itc/.venv/bin/python
 
 # 必要なパッケージのインストール
 echo "Installing required packages..."
