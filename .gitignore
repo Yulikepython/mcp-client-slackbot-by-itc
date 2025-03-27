@@ -185,3 +185,9 @@ htmlcov/
 # OS specific
 .DS_Store
 Thumbs.db
+
+mcp-client-slackbot_project_summary.txt
+
+# Project specific
+*.db
+servers_config.json
