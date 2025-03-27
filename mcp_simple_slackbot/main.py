@@ -36,7 +36,13 @@ class Configuration:
     @staticmethod
     def load_env() -> None:
         """Load environment variables from .env file."""
-        load_dotenv()
+        env_path = os.path.join(os.path.dirname(
+            os.path.dirname(__file__)), '.env')
+        if os.path.exists(env_path):
+            load_dotenv(env_path, override=True)
+            logging.info(f"Loaded environment variables from {env_path}")
+        else:
+            logging.warning(f"Environment file not found at {env_path}")
 
     @staticmethod
     def load_config(file_path: str) -> Dict[str, Any]:
@@ -102,7 +108,8 @@ class Server:
             else self.config["command"]
         )
         if command is None:
-            raise ValueError("The command must be a valid string and cannot be None.")
+            raise ValueError(
+                "The command must be a valid string and cannot be None.")
 
         server_params = StdioServerParameters(
             command=command,
@@ -144,7 +151,8 @@ class Server:
         for item in tools_response:
             if isinstance(item, tuple) and item[0] == "tools":
                 for tool in item[1]:
-                    tools.append(Tool(tool.name, tool.description, tool.inputSchema))
+                    tools.append(
+                        Tool(tool.name, tool.description, tool.inputSchema))
 
         return tools
 
@@ -199,7 +207,8 @@ class Server:
                 self.session = None
                 self.stdio_context = None
             except Exception as e:
-                logging.error(f"Error during cleanup of server {self.name}: {e}")
+                logging.error(
+                    f"Error during cleanup of server {self.name}: {e}")
 
 
 class Tool:
@@ -356,7 +365,8 @@ class LLMClient:
             if msg["role"] == "system":
                 system_message = msg["content"]
             elif msg["role"] == "user":
-                anthropic_messages.append({"role": "user", "content": msg["content"]})
+                anthropic_messages.append(
+                    {"role": "user", "content": msg["content"]})
             elif msg["role"] == "assistant":
                 anthropic_messages.append(
                     {"role": "assistant", "content": msg["content"]}
@@ -405,7 +415,8 @@ class SlackMCPBot:
     ) -> None:
         self.app = AsyncApp(token=slack_bot_token)
         # Create a socket mode handler with the app token
-        self.socket_mode_handler = AsyncSocketModeHandler(self.app, slack_app_token)
+        self.socket_mode_handler = AsyncSocketModeHandler(
+            self.app, slack_app_token)
 
         self.client = AsyncWebClient(token=slack_bot_token)
         self.servers = servers
@@ -429,7 +440,8 @@ class SlackMCPBot:
                     f"Initialized server {server.name} with {len(server_tools)} tools"
                 )
             except Exception as e:
-                logging.error(f"Failed to initialize server {server.name}: {e}")
+                logging.error(
+                    f"Failed to initialize server {server.name}: {e}")
 
     async def initialize_bot_info(self) -> None:
         """Get the bot's ID and other info."""
@@ -531,23 +543,25 @@ class SlackMCPBot:
 
         try:
             # Create system message with tool descriptions
-            tools_text = "\n".join([tool.format_for_llm() for tool in self.tools])
+            tools_text = "\n".join([tool.format_for_llm()
+                                   for tool in self.tools])
             system_message = {
                 "role": "system",
                 "content": (
-                    f"""You are a helpful assistant with access to the following tools:
+                    f"""あなたは次のツールにアクセスしながら、質問に適切に回答できる、優秀なアシスタントです。:
 
-{tools_text}
+                            {tools_text}
 
-When you need to use a tool, you MUST format your response exactly like this:
-[TOOL] tool_name
-{{"param1": "value1", "param2": "value2"}}
+                            When you need to use a tool, you MUST format your response exactly like this:
+                            [TOOL] tool_name
+                            {{"param1": "value1", "param2": "value2"}}
 
-Make sure to include both the tool name AND the JSON arguments.
-Never leave out the JSON arguments.
+                            Make sure to include both the tool name AND the JSON arguments.
+                            Never leave out the JSON arguments.
 
-After receiving tool results, interpret them for the user in a helpful way.
-"""
+                            After receiving tool results, interpret them for the user in a helpful way.
+                            回答はとくに指定が無い限り、日本語で回答すること。
+                            """
                 ),
             }
 
@@ -699,7 +713,8 @@ After receiving tool results, interpret them for the user in a helpful way.
                 await server.cleanup()
                 logging.info(f"Server {server.name} cleaned up")
             except Exception as e:
-                logging.error(f"Error during cleanup of server {server.name}: {e}")
+                logging.error(
+                    f"Error during cleanup of server {server.name}: {e}")
 
 
 async def main() -> None:
@@ -711,7 +726,8 @@ async def main() -> None:
             "SLACK_BOT_TOKEN and SLACK_APP_TOKEN must be set in environment variables"
         )
 
-    server_config = config.load_config("servers_config.json")
+    server_config = config.load_config(
+        "mcp_simple_slackbot/servers_config.json")
     servers = [
         Server(name, srv_config)
         for name, srv_config in server_config["mcpServers"].items()
