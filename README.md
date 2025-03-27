@@ -1,11 +1,12 @@
 # MCP Simple Slackbot
 
 MCP（Model Context Protocol）を使用して外部ツールの機能を拡張するシンプルな Slack ボットです。
+Google Workspace のカレンダーやメールなどの情報にアクセスし、Slack から簡単に操作できるようにします。
 
 ## 機能
 
 - **AI アシスタント**: LLM の機能を使用してチャンネルや DM でメッセージに応答
-- **MCP 統合**: SQLite データベースや Web フェッチなどの MCP ツールに完全アクセス
+- **Google Workspace 連携**: カレンダー、メール、ドライブなどの Google Workspace 機能にアクセス
 - **マルチ LLM サポート**: OpenAI、Groq、Anthropic のモデルに対応
 - **アプリホームタブ**: 利用可能なツールと使用方法の情報を表示
 
@@ -139,6 +140,12 @@ sudo systemctl restart mcp-slackbot
 - **DM**: ボットに直接メッセージを送信
 - **チャンネルメンション**: チャンネルで`@MCP Assistant`とメンション
 - **アプリホーム**: ボットのアプリホームタブで利用可能なツールを確認
+
+### Google Workspace 機能の利用例
+
+- カレンダーの予定確認
+- メールの送信
+- カレンダーの予定作成
 
 ## アーキテクチャ
 
