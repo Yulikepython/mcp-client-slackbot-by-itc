@@ -29,7 +29,9 @@ cat > "$SCRIPT_DIR/mcp_simple_slackbot/servers_config.json" << EOF
         "GOOGLE_CLIENT_ID": "${GOOGLE_CLIENT_ID}",
         "GOOGLE_CLIENT_SECRET": "${GOOGLE_CLIENT_SECRET}",
         "GOOGLE_REFRESH_TOKEN": "${GOOGLE_REFRESH_TOKEN}"
-      }
+      },
+      "encoding": "utf-8",
+      "encoding_error_handler": "replace"
     }
   }
 }
@@ -41,6 +43,10 @@ PYTHON_PATH=${PYTHON_PATH:-$(which python3)}
 # 必要なパッケージのインストール
 echo "Installing required packages..."
 $PYTHON_PATH -m pip install -r mcp_simple_slackbot/requirements.txt
+
+# Install the package in development mode
+echo "Installing the package in development mode..."
+$PYTHON_PATH -m pip install -e .
 
 # スクリプトを実行
 echo "Starting the application..."
