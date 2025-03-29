@@ -1,44 +1,59 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
-name = "mcp-simple-slackbot"
+name = "mcp_simple_slackbot"
 version = "0.1.0"
-description = "A simple Slack bot using the Model Context Protocol (MCP)"
+description = "A Slack bot using MCP servers"
 readme = "README.md"
-requires-python = ">=3.10"
-authors = [{ name = "sooperset", email = "soomiles.dev@gmail.com" }]
+requires-python = ">=3.8"
+authors = [
+    { name = "Your Name", email = "your.email@example.com" }
+]
 license = { text = "MIT" }
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
 ]
+
+# 基本的な依存関係
 dependencies = [
-    "slack_bolt>=1.18.0",
-    "slack_sdk>=3.21.0",
-    "python-dotenv>=1.0.0",
-    "mcp>=1.0.0",
-    "httpx>=0.24.1",
-    "aiohttp>=3.11.13",
-    "uvicorn>=0.23.2",
+    "slack_bolt>=1.23.0",
+    "slack_sdk>=3.35.0",
+    "python-dotenv>=1.1.0",
+    "mcp>=1.5.0",
+    "openai>=1.69.0",
+    "openai-agents>=0.0.7",
 ]
 
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
-[tool.pyright]
-include = ["mcp_simple_slackbot"]
-venvPath = "."
-venv = "venv"
-
-[tool.ruff.lint]
-select = ["E", "F", "I"]
-ignore = []
+# 開発用の依存関係
+[project.optional-dependencies]
+dev = [
+    "black>=24.2.0",
+    "isort>=5.13.2",
+    "ruff>=0.11.2",
+    "pytest>=8.3.5",
+    "pyright>=1.1.398",
+]
 
 [tool.ruff]
-line-length = 88
-target-version = "py310"
+line-length = 100
+target-version = "py38"
+
+[tool.black]
+line-length = 100
+target-version = ["py38"]
+
+[tool.isort]
+profile = "black"
+line_length = 100
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

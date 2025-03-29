@@ -8,10 +8,6 @@ source .env
 echo "Generating servers_config.json..."
 python scripts/generate_servers_config.py
 
-# Install required packages
-echo "Installing required packages..."
-pip install -r requirements.txt
-
 # Install the package in development mode
 echo "Installing the package in development mode..."
 pip install -e .

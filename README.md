@@ -1,58 +1,51 @@
 # MCP Simple Slackbot
 
-MCP（Model Context Protocol）を使用して外部ツールの機能を拡張するシンプルな Slack ボットです。
-Google Workspace のカレンダーやメールなどの情報にアクセスし、Slack から簡単に操作できるようにします。
+A Slack bot using MCP servers.
 
-## 機能
+## 必要条件
 
-- **AI アシスタント**: LLM の機能を使用してチャンネルや DM でメッセージに応答
-- **Google Workspace 連携**: カレンダー、メール、ドライブなどの Google Workspace 機能にアクセス
-- **マルチ LLM サポート**: OpenAI、Groq、Anthropic のモデルに対応
-- **アプリホームタブ**: 利用可能なツールと使用方法の情報を表示
+- Python 3.8 以上
+- Node.js (MCP サーバー用)
 
-## セットアップ
+## インストール
 
-### 1. リポジトリのクローンと初期設定
+1. リポジトリをクローン:
 
 ```bash
-# リポジトリをクローン
-git clone https://github.com/Yulikepython/mcp-client-slackbot-by-itc.git
+git clone https://github.com/yourusername/mcp-client-slackbot.git
 cd mcp-client-slackbot
-
-# 実行権限の付与
-chmod +x run.sh
 ```
 
-### 2. Slack アプリの作成
+2. 仮想環境を作成して有効化:
 
-1. [api.slack.com/apps](https://api.slack.com/apps)にアクセスし、「Create New App」をクリック
-2. 「From an app manifest」を選択し、ワークスペースを選択
-3. `mcp_simple_slackbot/manifest.yaml`の内容をマニフェストエディタにコピー
-4. アプリを作成し、ワークスペースにインストール
-5. 「Basic Information」セクションで「App-Level Tokens」までスクロール
-6. 「Generate Token and Scopes」をクリックし：
-   - 名前を「mcp-assistant」などと入力
-   - `connections:write`スコープを追加
-   - 「Generate」をクリック
-7. 以下のトークンをメモ：
-   - Bot Token (`xoxb-...`) - 「OAuth & Permissions」にあります
-   - App Token (`xapp-...`) - 先ほど生成したもの
-
-### 3. 環境変数の設定
-
-`.env`ファイルを作成し、以下の内容を設定：
-
+```bash
+python -m venv .venv
+source .venv/bin/activate  # Linux/macOS
+# または
+.venv\Scripts\activate  # Windows
 ```
+
+3. パッケージをインストール:
+
+```bash
+# 基本的な依存関係のみをインストール
+pip install -e .
+
+# 開発用の依存関係も含めてインストール
+pip install -e ".[dev]"
+```
+
+## 設定
+
+1. `.env`ファイルを作成し、必要な環境変数を設定:
+
+```env
 # Slack API認証情報
-SLACK_BOT_TOKEN=xoxb-your-token
-SLACK_APP_TOKEN=xapp-your-token
+SLACK_BOT_TOKEN=xoxb-your-bot-token
+SLACK_APP_TOKEN=xapp-your-app-token
 
-# LLM API認証情報
-OPENAI_API_KEY=sk-your-openai-key
-# または GROQ_API_KEY または ANTHROPIC_API_KEY
-
-# LLM設定
-LLM_MODEL=gpt-4-turbo
+# OpenAI API認証情報
+OPENAI_API_KEY=your-openai-api-key
 
 # Google Workspace MCP Server設定
 GOOGLE_WORKSPACE_SERVER_PATH=/path/to/your/server/index.js
@@ -61,111 +54,133 @@ GOOGLE_CLIENT_SECRET=your-client-secret
 GOOGLE_REFRESH_TOKEN=your-refresh-token
 ```
 
-## 実行方法
-
-### 開発環境での実行
+2. 実行:
 
 ```bash
 ./run.sh
 ```
 
-### 本番環境での実行
+`run.sh`は以下の処理を行います：
 
-本番環境では、プロセスの永続化と自動再起動のために`systemd`サービスを使用することを推奨します。
+1. 環境変数を`.env`ファイルから読み込み
+2. `servers_config.json`を動的に生成
+3. パッケージをインストール
+4. アプリケーションを起動
 
-1. サービスファイルの作成：
+## 依存関係の管理
+
+このプロジェクトは`pyproject.toml`を使用して依存関係を管理しています。
+
+### 依存関係の種類
+
+1. **基本的な依存関係**
+
+   - `pyproject.toml`の`dependencies`セクションで定義
+   - アプリケーションの実行に必要な最小限のパッケージ
+   - バージョンは`>=`で指定し、互換性のある最新バージョンを使用
+
+2. **開発用の依存関係**
+   - `pyproject.toml`の`[project.optional-dependencies]`セクションで定義
+   - 開発、テスト、コード品質管理に必要なパッケージ
+   - `pip install -e ".[dev]"`でインストール
+
+### 依存関係の更新
+
+1. 新しいパッケージの追加:
+
+   ```bash
+   # 基本的な依存関係の場合
+   pip install new-package
+   pip freeze | grep new-package >> requirements.txt
+   # requirements.txtの内容をpyproject.tomlのdependenciesに追加
+
+   # 開発用の依存関係の場合
+   pip install new-dev-package
+   pip freeze | grep new-dev-package >> requirements-dev.txt
+   # requirements-dev.txtの内容をpyproject.tomlの[project.optional-dependencies].devに追加
+   ```
+
+2. 依存関係の更新:
+   ```bash
+   # すべての依存関係を最新バージョンに更新
+   pip install --upgrade -e ".[dev]"
+   ```
+
+## MCP サーバーの追加
+
+新しい MCP サーバーを追加するには、以下の手順に従います：
+
+1. `scripts/generate_servers_config.py`を編集して、新しいサーバーの設定を追加:
+
+```python
+config = {
+    "mcpServers": {
+        "google-workspace": {
+            "command": "node",
+            "args": [os.getenv("GOOGLE_WORKSPACE_SERVER_PATH", "google-workspace-server/index.js")],
+            "env": {
+                "GOOGLE_CLIENT_ID": os.getenv("GOOGLE_CLIENT_ID", ""),
+                "GOOGLE_CLIENT_SECRET": os.getenv("GOOGLE_CLIENT_SECRET", ""),
+                "GOOGLE_REFRESH_TOKEN": os.getenv("GOOGLE_REFRESH_TOKEN", "")
+            },
+            "encoding": "utf-8",
+            "encoding_error_handler": "replace"
+        },
+        # 新しいサーバーの設定を追加
+        "new-server": {
+            "command": "node",  # または他のコマンド
+            "args": [os.getenv("NEW_SERVER_PATH", "new-server/index.js")],
+            "env": {
+                "NEW_SERVER_API_KEY": os.getenv("NEW_SERVER_API_KEY", ""),
+                # 他の環境変数
+            },
+            "encoding": "utf-8",
+            "encoding_error_handler": "replace"
+        }
+    }
+}
+```
+
+2. `.env`ファイルに必要な環境変数を追加:
+
+```env
+NEW_SERVER_PATH=/path/to/your/new/server/index.js
+NEW_SERVER_API_KEY=your-api-key
+```
+
+3. アプリケーションを再起動:
 
 ```bash
-sudo nano /etc/systemd/system/mcp-slackbot.service
+./run.sh
 ```
 
-以下の内容を追加：
+## 開発
 
-```ini
-[Unit]
-Description=MCP Slackbot Service
-After=network.target
+このプロジェクトは以下の開発ツールを使用しています：
 
-[Service]
-Type=simple
-User=your-user
-WorkingDirectory=/path/to/mcp-client-slackbot
-Environment=PYTHONUNBUFFERED=1
-ExecStart=/path/to/mcp-client-slackbot/run.sh
-Restart=always
-RestartSec=10
+- Ruff: コードリンティング
+- Black: コードフォーマット
+- isort: インポートの整理
+- pytest: テスト実行
 
-[Install]
-WantedBy=multi-user.target
-```
-
-2. サービスの有効化と起動：
+### コードのフォーマット
 
 ```bash
-# systemdの設定を再読み込み
-sudo systemctl daemon-reload
-
-# サービスを有効化（システム起動時に自動起動）
-sudo systemctl enable mcp-slackbot
-
-# サービスを起動
-sudo systemctl start mcp-slackbot
-
-# ステータスの確認
-sudo systemctl status mcp-slackbot
+black .
+isort .
 ```
 
-3. ログの確認：
+### リンティング
 
 ```bash
-# リアルタイムでログを表示
-sudo journalctl -u mcp-slackbot -f
-
-# 最新のログを表示
-sudo journalctl -u mcp-slackbot -n 100
+ruff check .
 ```
 
-4. サービスの管理：
+### テストの実行
 
 ```bash
-# サービスの停止
-sudo systemctl stop mcp-slackbot
-
-# サービスの再起動
-sudo systemctl restart mcp-slackbot
+pytest
 ```
-
-## 使用方法
-
-- **DM**: ボットに直接メッセージを送信
-- **チャンネルメンション**: チャンネルで`@MCP Assistant`とメンション
-- **アプリホーム**: ボットのアプリホームタブで利用可能なツールを確認
-
-### Google Workspace 機能の利用例
-
-- カレンダーの予定確認
-- メールの送信
-- カレンダーの予定作成
-
-## アーキテクチャ
-
-ボットは以下の構造で設計されています：
-
-1. **SlackMCPBot**: Slack イベントとメッセージ処理を管理するコアクラス
-2. **LLMClient**: LLM API（OpenAI、Groq、Anthropic）との通信を処理
-3. **Server**: MCP サーバーとの通信を管理
-4. **Tool**: MCP サーバーから利用可能なツールを表現
-
-メッセージ受信時の処理フロー：
-
-1. メッセージと利用可能なツールを LLM に送信
-2. LLM の応答にツール呼び出しが含まれる場合、ツールを実行
-3. 結果を LLM に返して解釈
-4. 最終的な応答をユーザーに送信
-
-## クレジット
-
-このプロジェクトは[MCP Simple Chatbot](https://github.com/sooperset/mcp-client-slackbot)をベースにしています。
 
 ## ライセンス
 
