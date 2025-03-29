@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 def read_requirements(filename):
     """Read requirements from file."""
-    with open(filename) as f:
+    with open(filename, 'r', encoding='utf-8') as f:
         return [line.strip() for line in f if line.strip() and not line.startswith('#')]
 
 
