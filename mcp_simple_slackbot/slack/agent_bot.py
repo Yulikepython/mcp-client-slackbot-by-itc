@@ -24,9 +24,11 @@ class SlackAgentBot:
         self.client = AsyncWebClient(token=slack_bot_token)
         self.conversations = {}  # Store conversation context per channel
         self.agent = agent
-        self.tools = []  # TODO: add tools
-        self.bot_id = None
 
+        self.tools: tuple[str, str] = [(tool.name, tool.description)
+                                       for tool in self.agent.tools]
+
+        self.bot_id = None
         # Set up event handlers
         self.app.event("app_mention")(self.handle_mention)
         self.app.message()(self.handle_message)
@@ -41,6 +43,10 @@ class SlackAgentBot:
         except Exception as e:
             logging.error("Failed to get bot info: %s", e)
             self.bot_id = None
+        for mcp_server in self.agent.mcp_servers:
+            mcp_tools = await mcp_server.list_tools()
+            for mcp_tool in mcp_tools:
+                self.tools.append((mcp_tool.name, mcp_tool.description))
 
     async def handle_mention(self, event, say):
         """Handle mentions of the bot in channels."""
@@ -78,13 +84,14 @@ class SlackAgentBot:
         ]
 
         # Add tools
-        for tool in self.tools:
+        print(self.tools)
+        for name, description in self.tools:
             blocks.append(
                 {
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": f"- *{tool.name}*: {tool.description}",
+                        "text": f"- *{name}*: {description}",
                     },
                 }
             )

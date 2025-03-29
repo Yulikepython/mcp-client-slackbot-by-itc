@@ -27,7 +27,7 @@ class Configuration:
         self.openai_api_key = os.getenv("OPENAI_API_KEY")
         self.groq_api_key = os.getenv("GROQ_API_KEY")
         self.anthropic_api_key = os.getenv("ANTHROPIC_API_KEY")
-        self.llm_model = os.getenv("LLM_MODEL", "gpt-4-turbo")
+        self.llm_model = os.getenv("LLM_MODEL", "gpt-4o")
 
     def load_env(self) -> None:
         """Load environment variables from .env file."""

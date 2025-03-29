@@ -43,7 +43,6 @@ async def main() -> None:
     mcp_servers = await initialize_servers(server_config)
 
     agent = setup_agent(
-        config.openai_api_key,
         mcp_servers,
         "You are a helpful assistant that can help with tasks related to the MCP servers and tools. You can use the tools to get information about the MCP servers and tools. You should reply in a friendly and helpful manner with the language that the user speaks."
     )
