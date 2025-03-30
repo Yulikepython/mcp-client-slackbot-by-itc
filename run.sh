@@ -15,6 +15,24 @@ else
     exit 1
 fi
 
+# 必要な環境変数が設定されているか確認
+required_vars=(
+    "SLACK_BOT_TOKEN"
+    "SLACK_APP_TOKEN"
+    "OPENAI_API_KEY"
+    "GOOGLE_WORKSPACE_SERVER_PATH"
+    "GOOGLE_CLIENT_ID"
+    "GOOGLE_CLIENT_SECRET"
+    "GOOGLE_REFRESH_TOKEN"
+)
+
+for var in "${required_vars[@]}"; do
+    if [ -z "${!var}" ]; then
+        echo "Error: $var is not set in .env file"
+        exit 1
+    fi
+done
+
 # servers_config.jsonを動的に生成
 echo "Generating servers_config.json..."
 cat > "$SCRIPT_DIR/mcp_simple_slackbot/servers_config.json" << EOF
@@ -29,7 +47,9 @@ cat > "$SCRIPT_DIR/mcp_simple_slackbot/servers_config.json" << EOF
         "GOOGLE_CLIENT_ID": "${GOOGLE_CLIENT_ID}",
         "GOOGLE_CLIENT_SECRET": "${GOOGLE_CLIENT_SECRET}",
         "GOOGLE_REFRESH_TOKEN": "${GOOGLE_REFRESH_TOKEN}"
-      }
+      },
+      "encoding": "utf-8",
+      "encoding_error_handler": "replace"
     }
   }
 }
@@ -40,9 +60,9 @@ PYTHON_PATH=${PYTHON_PATH:-$(which python3)}
 
 # 必要なパッケージのインストール
 echo "Installing required packages..."
-$PYTHON_PATH -m pip install -r mcp_simple_slackbot/requirements.txt
+$PYTHON_PATH -m pip install -e .
 
 # スクリプトを実行
 echo "Starting the application..."
 cd "$SCRIPT_DIR"
-$PYTHON_PATH mcp_simple_slackbot/main.py 
+$PYTHON_PATH -m mcp_simple_slackbot.main 
