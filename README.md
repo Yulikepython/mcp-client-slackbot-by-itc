@@ -1,11 +1,40 @@
 # MCP Simple Slackbot
 
-A Slack bot using MCP servers.
+Slack ボットを使用して MCP サーバーとツールを利用できるシンプルなアプリケーションです。
+
+## 主な変更点（最新リリース）2025/03/30 時点
+
+- **Agent ベースのアーキテクチャへの移行**
+
+  - `openai-agents`パッケージを使用した新しいアーキテクチャ
+  - より柔軟なツール管理と実行
+  - 改善された会話コンテキスト管理
+
+- **依存関係の改善**
+
+  - `pyproject.toml`による依存関係管理
+  - 開発用依存関係の分離
+  - 最新のパッケージバージョンへの更新
+
+- **設定管理の改善**
+  - 動的な`servers_config.json`生成
+  - 環境変数による設定管理
+  - より柔軟なサーバー設定
+
+## 機能
+
+- Slack ボットとして機能
+- MCP サーバーとの連携
+- ツールの実行と結果の解釈
+- スレッド対応の会話管理
+- 多言語対応（日本語/英語）
 
 ## 必要条件
 
 - Python 3.8 以上
-- Node.js (MCP サーバー用)
+- Node.js（Google Workspace MCP サーバー用）
+- Slack API トークン
+- OpenAI API キー
 
 ## インストール
 
@@ -25,7 +54,7 @@ source .venv/bin/activate  # Linux/macOS
 .venv\Scripts\activate  # Windows
 ```
 
-3. パッケージをインストール:
+3. 依存関係をインストール:
 
 ```bash
 # 基本的な依存関係のみをインストール
@@ -86,25 +115,7 @@ GOOGLE_REFRESH_TOKEN=your-refresh-token
 
 ### 依存関係の更新
 
-1. 新しいパッケージの追加:
-
-   ```bash
-   # 基本的な依存関係の場合
-   pip install new-package
-   pip freeze | grep new-package >> requirements.txt
-   # requirements.txtの内容をpyproject.tomlのdependenciesに追加
-
-   # 開発用の依存関係の場合
-   pip install new-dev-package
-   pip freeze | grep new-dev-package >> requirements-dev.txt
-   # requirements-dev.txtの内容をpyproject.tomlの[project.optional-dependencies].devに追加
-   ```
-
-2. 依存関係の更新:
-   ```bash
-   # すべての依存関係を最新バージョンに更新
-   pip install --upgrade -e ".[dev]"
-   ```
+pyproject.toml に必要なパッケージを追記してください。
 
 ## MCP サーバーの追加
 
@@ -156,31 +167,10 @@ NEW_SERVER_API_KEY=your-api-key
 
 ## 開発
 
-このプロジェクトは以下の開発ツールを使用しています：
-
-- Ruff: コードリンティング
-- Black: コードフォーマット
-- isort: インポートの整理
-- pytest: テスト実行
-
-### コードのフォーマット
-
-```bash
-black .
-isort .
-```
-
-### リンティング
-
-```bash
-ruff check .
-```
-
-### テストの実行
-
-```bash
-pytest
-```
+- コードフォーマット: `black .`
+- インポートの整理: `isort .`
+- リント: `ruff check .`
+- 型チェック: `pyright`
 
 ## ライセンス
 
