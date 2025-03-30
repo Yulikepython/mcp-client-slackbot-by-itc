@@ -172,6 +172,84 @@ NEW_SERVER_API_KEY=your-api-key
 - リント: `ruff check .`
 - 型チェック: `pyright`
 
+### 本番環境での実行
+
+本番環境では、プロセスの永続化と自動再起動のために`systemd`サービスを使用することを推奨します。
+
+1. サービスファイルの作成：
+
+```bash
+sudo nano /etc/systemd/system/mcp-slackbot.service
+```
+
+以下の内容を追加：
+
+```ini
+[Unit]
+Description=MCP Slackbot Service
+After=network.target
+
+[Service]
+Type=simple
+User=your-user
+WorkingDirectory=/path/to/mcp-client-slackbot
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/path/to/mcp-client-slackbot/run.sh
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+```
+
+2. サービスの有効化と起動：
+
+```bash
+# systemdの設定を再読み込み
+sudo systemctl daemon-reload
+
+# サービスを有効化（システム起動時に自動起動）
+sudo systemctl enable mcp-slackbot
+
+# サービスを起動
+sudo systemctl start mcp-slackbot
+
+# ステータスの確認
+sudo systemctl status mcp-slackbot
+```
+
+3. ログの確認：
+
+```bash
+# リアルタイムでログを表示
+sudo journalctl -u mcp-slackbot -f
+
+# 最新のログを表示
+sudo journalctl -u mcp-slackbot -n 100
+```
+
+4. サービスの管理：
+
+```bash
+# サービスの停止
+sudo systemctl stop mcp-slackbot
+
+# サービスの再起動
+sudo systemctl restart mcp-slackbot
+```
+
+## 使用方法
+
+- **DM**: ボットに直接メッセージを送信
+- **チャンネルメンション**: チャンネルで`@MCP Assistant`とメンション
+- **アプリホーム**: ボットのアプリホームタブで利用可能なツールを確認
+
+## クレジット
+
+このプロジェクトは[MCP Simple Chatbot](https://github.com/sooperset/mcp-client-slackbot)をベースにしています。
+
+---
+
 ## ライセンス
 
 MIT License
