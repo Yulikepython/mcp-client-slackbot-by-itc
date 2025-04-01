@@ -50,6 +50,18 @@ cat > "$SCRIPT_DIR/mcp_simple_slackbot/servers_config.json" << EOF
       },
       "encoding": "utf-8",
       "encoding_error_handler": "replace"
+    },
+    "openai-vector-store": {
+      "command": "node",
+      "args": [
+        "${OPENAI_VECTOR_STORE_PATH}"
+      ],
+      "env": {
+        "OPENAI_API_KEY": "${OPENAI_API_KEY}",
+        "OPENAI_VECTOR_STORE_ID": "${OPENAI_VECTOR_STORE_ID}",
+        "SERVER_TOOL_NAME": "${SERVER_TOOL_NAME}",
+        "SERVER_TOOL_DESCRIPTION": "${SERVER_TOOL_DESCRIPTION}"
+      }
     }
   }
 }
